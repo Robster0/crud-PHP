@@ -1,4 +1,7 @@
 <?php
+require '../vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable('../');
+$dotenv->load();
 
 class _db {
 
@@ -7,18 +10,29 @@ class _db {
     }
 
     function create($name, $content) {
+        $name = trim($name, " ");
+        $content = trim($content, " ");
+
+        if($name == "" || $content == "") return false;
+
+        $pattern = "/<script>|<\/script>/";
+
+        if(preg_match($pattern, $name) || preg_match($pattern, $content)) return false;
+        
         $conn = $this->connect();
 
         $date = date('Y/m/d h:i:s');
 
         $query = "INSERT INTO posts (name, content, date) VALUES ('{$name}', '{$content}', '{$date}')";   
+    
+        $returnvalue = true;
+        
+        if($conn->query($query) === FALSE) $returnvalue = false;
 
-        if($conn->query($query) === FALSE) {
-            echo "INSERTION (PENETRATION) DIDN'T WORK";
-        }
- 
- 
+
         $conn->close();
+
+        return $returnvalue;
     }
     function read() {
         $conn = $this->connect();
@@ -40,25 +54,40 @@ class _db {
 
         return $data;
     }
-    function update(int $id) {
+    function update(string $name, string $content, int $id) {
+        $name = trim($name, " ");
+        $content = trim($content, " ");
+
+        if($name == "" || $content == "") return false;
+
+        $pattern = "/<script>|<\/script>/";
+
+        if(preg_match($pattern, $name) || preg_match($pattern, $content)) return false;
+
         $conn = $this->connect();
-
-        $query = "UPDATE posts SET name, content WHERE id={$id}";   
-
-        $result = $conn->query($query);
+  
+        $query = "UPDATE posts SET name=IF(LENGTH('{$name}')=0, name, '{$name}'), content=IF(LENGTH('{$content}')=0, content, '{$content}') WHERE id={$id}";   
+        
+        $returnvalue = true;
+        
+        if($conn->query($query) === FALSE) $returnvalue = false;
 
         $conn->close();
 
-        if($result->num_rows < 1) return null;
-
-        return true;
+        return $returnvalue;
     }
-    function delete() {
+    function delete(int $id) {
         $conn = $this->connect();
 
-
+        $query = "DELETE FROM posts WHERE id={$id}";   
+        
+        $returnvalue = true;
+        
+        if($conn->query($query) === FALSE) $returnvalue = false;
 
         $conn->close();
+
+        return $returnvalue;
     }
 
     function connect() {
