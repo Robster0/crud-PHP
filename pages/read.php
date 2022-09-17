@@ -9,10 +9,8 @@
 </head>
 <body>
     <?php
-       require '../vendor/autoload.php';
        include('../DB/_db.php');  
-       $dotenv = Dotenv\Dotenv::createImmutable('../');
-       $dotenv->load();
+       
        
        $mysqldb = new _db();
        
