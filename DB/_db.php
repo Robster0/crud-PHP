@@ -5,11 +5,7 @@ $dotenv->load();
 
 class _db {
 
-    function __constructor() {
-        
-    }
-
-    function create($name, $content) {
+    public function create($name, $content) {
         $name = trim($name, " ");
         $content = trim($content, " ");
 
@@ -34,7 +30,7 @@ class _db {
 
         return $returnvalue;
     }
-    function read() {
+    public function read() {
         $conn = $this->connect();
 
         $query = "SELECT * FROM posts";   
@@ -54,11 +50,9 @@ class _db {
 
         return $data;
     }
-    function update(string $name, string $content, int $id) {
+    public function update(string $name, string $content, int $id) {
         $name = trim($name, " ");
         $content = trim($content, " ");
-
-        if($name == "" || $content == "") return false;
 
         $pattern = "/<script>|<\/script>/";
 
@@ -76,7 +70,7 @@ class _db {
 
         return $returnvalue;
     }
-    function delete(int $id) {
+    public function delete(int $id) {
         $conn = $this->connect();
 
         $query = "DELETE FROM posts WHERE id={$id}";   
@@ -90,7 +84,7 @@ class _db {
         return $returnvalue;
     }
 
-    function connect() {
+    private function connect() {
         $conn = new mysqli("localhost", $_ENV['USERNAME'], $_ENV['PW'], "crud_php");
 
         if($conn->connect_error) {
@@ -100,6 +94,4 @@ class _db {
         return $conn;
     }
 }
-
-
 ?>
